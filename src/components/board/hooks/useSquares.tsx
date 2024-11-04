@@ -21,5 +21,6 @@ export function useSquares() {
         squares[i] = previousColor;
       }
     }
+    
   return {squares}
 }
