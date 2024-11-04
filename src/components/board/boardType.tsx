@@ -1,5 +1,5 @@
 export type SquareColor = 'black' | 'gray';
-export type PiecesColor = 'red' | 'blue' | 'green'| undefined;
+export type PiecesColor = 'red' | 'blue' | 'green'| undefined | '#A8C3A1'
 
 
 export type Positions ={
@@ -15,13 +15,13 @@ export type Positions ={
    right: number,
   }
   export type BackgroundPieces= 'red'| 'blue' | 'gray' |'green'
-
+ 
  export type SquareFull={
     idSquare: number;
     idPieces: number;
     index:number;
     position:PiecePositions,
-    color:'red'| 'blue'
+    color:PiecesColor
 }
 
   

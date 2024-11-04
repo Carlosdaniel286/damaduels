@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePieceSetup } from "./useCreatePieces";
-import { PiecePositions, BackgroundPieces, Positions, SquareFull } from "../boardType";
+import { PiecePositions, BackgroundPieces, Positions, SquareFull, PiecesColor } from "../boardType";
 
 export function useMovePieces() {
     const squareRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -8,9 +8,16 @@ export function useMovePieces() {
     const [currentBackground, setCurrentBackground] = useState<BackgroundPieces>('gray');
     const storedSquares = localStorage.getItem('duels');
     const occupiedSquarePositions: SquareFull[] = storedSquares ? JSON.parse(storedSquares) : [];
-   
-   console.log(occupiedSquarePositions)
-    const updateSquare = (squareId: number, pieceId: number, position: PiecePositions,index:number,color:'red'|'blue') => {
+   // localStorage.removeItem('duels')
+  console.log(occupiedSquarePositions)
+  const index = occupiedSquarePositions.length>0?occupiedSquarePositions.length-1:false
+  const lastColerPiecesMoviment = index!==false? occupiedSquarePositions[index].color:0
+  
+  
+  
+  
+  
+  const updateSquare = (squareId: number, pieceId: number, position: PiecePositions,index:number,color:PiecesColor) => {
         const updatedSquareArray = [...occupiedSquarePositions];
         const isSomeIndex = updatedSquareArray.filter((item)=>{
           if(item.index!=index) return item
@@ -20,6 +27,16 @@ export function useMovePieces() {
         localStorage.setItem("duels", JSON.stringify(isSomeIndex));
     };
 
+   
+      
+      useEffect(() => {
+        console.log(redPieces)
+        console.log(bluePieces)
+       // resetPieceMoviment();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [lastColerPiecesMoviment]); // Executa apenas quando `lastColerPiecesMoviment` muda
+      
+   
     const movePiece = (
         piece: Positions, 
         squareId: number, 
@@ -27,13 +44,13 @@ export function useMovePieces() {
         index:number
     
     ) => {
-        if (piece.color === 'green') {
-             piece.color = currentBackground === 'blue' ? 'blue' : 'red';
+        if (piece.color ===  'green') {
+            piece.color = currentBackground  === 'blue' ? 'blue' : 'red';
             piece.position = newPosition;
-            piece.isMovedPieces = true;
+            
             updateSquare(squareId, piece.id?? 0, newPosition,index,piece.color);
         }
-       //  applyMoveRules();
+     
         return piece; // Retorna o item original caso a cor não seja 'green'
     };
 
@@ -47,41 +64,36 @@ export function useMovePieces() {
     return num
   }
    
-   
-   
-   
-   
-   
-   
-    const handlePieceMovement = (
+  const handlePieceMovement = (
         background: BackgroundPieces,
         targetId: number,
         targetType: string,
         newPosition: PiecePositions
     ) => {
-        if (background === 'blue') setCurrentBackground('blue');
-        if (background === 'red') setCurrentBackground('red');
-
+       
+         if(background==='blue')setCurrentBackground('blue')
+         if(background==='red')setCurrentBackground('red')
         const pieceColor = background !== 'blue' && background !== 'red' ? currentBackground : background;
         const pieces = pieceColor === 'red' ? redPieces : bluePieces;
         const isRedPiece = pieceColor === 'red';
         const isBluePiece = pieceColor === 'blue';
 
-        if (targetType === 'piece') {
+          if (targetType === 'piece') {
             const updatedPieces = pieces.map((piece) => {
+                piece.isMovedPieces = lastColerPiecesMoviment==piece.color?true:false
                 if(piece.isMovedPieces==true)return piece
-                if (piece.id === targetId && piece.color !== 'green') {
+                if(piece.color==lastColerPiecesMoviment) return piece
+               if (piece.id === targetId && piece.color !== 'green') {
+                  
                     piece.color = 'green';
                     piece.id= hasPiecesInSquare(piece.id)
                     return piece;
                 }
                
-                if (piece.color === 'green') {
-                   
-                    const newBackgroundColor = currentBackground === 'blue' ? 'blue' : 'red';
-                    piece.color = newBackgroundColor;
-                    
-                    setCurrentBackground(newBackgroundColor);
+                if (piece.color === 'green' ) {
+                   const newBackgroundColor = lastColerPiecesMoviment === 'blue' ? 'red' : 'blue';
+                    piece.color = newBackgroundColor ;
+                  
                     return piece;
                 }
                
@@ -94,12 +106,14 @@ export function useMovePieces() {
 
         if (targetType === 'squares') {
             const updatedPieces = pieces.map((piece,index) => {
+                piece.isMovedPieces = lastColerPiecesMoviment==piece.color?true:false
                 if(piece.isMovedPieces==true) return piece
                 if (piece.id === undefined || typeof piece.id === 'string') return piece;
                 
                 let isValidMove = false;
                 if (pieceColor === 'red') {
                     if (targetId - piece.id === 7 || targetId - piece.id === 9) {
+
                         isValidMove = true;
                     }
                 } else if (pieceColor === 'blue') {
@@ -108,6 +122,8 @@ export function useMovePieces() {
                     }
                 }
                 if (isValidMove) {
+                 //   piece.color='#A8C3A1'
+                   //  piece.isMovedPieces = lastColerPiecesMoviment==piece.color?true:false
                     return movePiece(piece, targetId, newPosition,index);
                 }
                 return piece;

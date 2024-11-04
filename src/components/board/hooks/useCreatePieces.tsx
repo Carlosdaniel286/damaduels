@@ -9,7 +9,11 @@ const MAX_PIECES = 12; // Número máximo de peças para cada cor
 export function usePieceSetup(squareRefs: MutableRefObject<(HTMLDivElement | null)[]>) {
   const [redPieces, setRedPieces] = useState<Positions[]>([initPositions]);
   const [bluePieces, setBluePieces] = useState<Positions[]>([initPositions]);
-
+  const savedData = localStorage.getItem('duels');
+    const occupiedSquarePositions: SquareFull[] = savedData ? JSON.parse(savedData) : [];
+  const index = occupiedSquarePositions.length>0?occupiedSquarePositions.length-1:false
+  const lastColerPiecesMoviment = index!==false? occupiedSquarePositions[index].color:0
+  
   const updatePiecePositions = (color: 'red' | 'blue') => {
     const pieces: Positions[] = [];
 
@@ -41,20 +45,20 @@ export function usePieceSetup(squareRefs: MutableRefObject<(HTMLDivElement | nul
   };
 
   const restorePreviousPositions = (pieces: Positions[]): Positions[] => {
-    const savedData = localStorage.getItem('duels');
-    const previousPositions: SquareFull[] = savedData ? JSON.parse(savedData) : [];
+    
  
     const updatedPieces = [...pieces];
-    previousPositions.forEach((savedPiece) => {
+    occupiedSquarePositions.forEach((savedPiece) => {
       updatedPieces.forEach((piece,index) => {
         if (savedPiece.index==index && savedPiece.color==piece.color ) {
           piece.id=savedPiece.idSquare
           piece.position = savedPiece.position;
-          piece.isMovedPieces = true
+         
         }
+        piece.isMovedPieces = lastColerPiecesMoviment==piece.color?true:false
       });
     });
-   const mapPositions = previousPositions.map((item)=>{
+   const mapPositions = occupiedSquarePositions.map((item)=>{
       item.idPieces=item.idSquare
        return item
    })
