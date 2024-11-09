@@ -5,11 +5,16 @@
   width: 800px;
 }
 #piece{
-  height: 75px;
-  width: 75px;
-}
-.piece{
   height: 80px;
   width: 80px;
+  border-radius: 50%;
+  
+
+}
+.piece{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
 

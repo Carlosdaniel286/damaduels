@@ -1,5 +1,5 @@
 export type SquareColor = 'black' | 'gray';
-export type PiecesColor = 'red' | 'blue' | 'green'| undefined | '#A8C3A1'
+export type PiecesColor = 'red' | 'blue' | 'green'
 
 
 export type Positions ={
@@ -13,15 +13,35 @@ export type Positions ={
     top: number,
     left: number,
    right: number,
+   width:number,
+   height:number,
+   dataKey:string,
+   dataPosition:string,
+   background:PiecesColor
   }
   export type BackgroundPieces= 'red'| 'blue' | 'gray' |'green'
  
  export type SquareFull={
-    idSquare: number;
     idPieces: number;
-    index:number;
     position:PiecePositions,
     color:PiecesColor
 }
 
+export type Board ={
+    typeColor?: "black" | "gray";
+    id?: string;
+    data_key?: string;
+    data_position?:string;
+}
+
+export type OptionsPositionsMove ={
+    targetPosition:string
+    background:PiecesColor
+    
+}
+
+export type ToggleColor ={
+     background:PiecesColor,
+     position:string | null
+}
   

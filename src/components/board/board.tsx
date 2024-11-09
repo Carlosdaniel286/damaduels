@@ -1,84 +1,75 @@
 "use client"
-
-import Square from "../square/square"; // Importa o componente Square
 import './board.css'; // Importa o estilo do tabuleiro
 import Piece from "../piece/piece";
-
-import { useMovePieces } from "./hooks/useMoviePiecies";
-import { useSquares } from "./hooks/useSquares";
-
+import { useSetupBoard } from "./hooks/useSetupBoard";
+import Square from '../square/square';
+import { useMovePieces } from './hooks/useMoviePiecies';
+import { useSetupPieces } from './hooks/useSetupPieces';
+import { usePieces } from '@/app/context/piecePositions';
 
 
 export default function Board() {
-  const{squareRefs,redPieces,handleMovePieces,bluePieces}=useMovePieces ()
- const {squares}= useSquares()
-  
- 
+  const {square}=useSetupBoard()
+  const{piecesPositions}=usePieces()
+  const {squareRefs}= useSetupPieces()
+  const {getAvailableMoves,updatePiecePosition}= useMovePieces()
 
 return (
-    <div className='board'>
-     
-      { redPieces.map((color, index) => (
-       <div
-          key={index}
-           className="piece"
-           style={{
-             position:'fixed',
-             left:redPieces[index].position.left+11,
-             bottom:redPieces[index].position.bottom,
-             top:redPieces[index].position.top,
-            right:redPieces[index].position.right
-          }}
+    <div className='board'
+   >
+     {square.map((item,index)=>(
+        <div 
+         key={index}
+        >
+         <Square
+         key={index}
+         typeColor={item.typeColor}
+         id={index.toString()}
+         data_key={item.data_key}
+         data_position={item.data_position}
+         ref={element => {squareRefs?.current.push(element)}}
+         onClick={((ev)=>{
+        // console.log(item.data_position)
+         updatePiecePosition(ev, item,)
+        
+         })}
+         />
          
+         </div>
+      ))}
+    {  
+      
+      piecesPositions.map((item,index)=>(
+        <div
+        key={index}
+        className='piece'
+        id={index.toPrecision()}
+        data-key={item.dataKey}
+        data-position={item.dataPosition}
+        onClick={() => {
+         console.log(item.dataPosition)
+          getAvailableMoves(item)
+      }}
+        style={{
+          position:'absolute', 
+          top:item.top,
+          right:item.right,
+          left:item.left,
+          bottom:item.bottom,
+          width:item.width,
+          height:item.height,
+          
+         }}
         >
           <Piece
-            background={color?.color}
-            onClick={((ev)=>
-              handleMovePieces(ev)
-                  )}
-            data_key={color?.id?.toString()}
-            id="piece"
-            
-          />
-        </div>
-      ))}
-     
-     {squares.map((color, index) => (
-        <Square
-         key={index}
-         id='squares'
-         data_key={index.toString()}
-         onClick={((ev)=>handleMovePieces(ev)  )}
-          typeColor={color}
-          ref={element => {squareRefs?.current.push(element)}}
-        />
-        
-      ))} 
-      { bluePieces.map((color, index) => (
-      <div
-         key={index}
-          className="piece"
-          style={{
-            position:'fixed',
-            left:bluePieces[index].position.left+11,
-            bottom:bluePieces[index].position.bottom,
-            top:bluePieces[index].position.top,
-           right:bluePieces[index].position.right
-         }}
-        
-       >
-         <Piece
-           background={color?.color}
-           onClick={((ev)=>handleMovePieces(ev)
-           )}
-           data_key={color?.id?.toString()}
-           id="piece"
-           
+           background={item.background}
+           id='piece'
+           data_key={item.dataKey}
+           data_position={item.dataPosition}
          />
-       </div>
-       
-       
-     ))}
+         </div>
+         ))
+        }
     </div>
    
   );

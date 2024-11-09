@@ -1,12 +1,23 @@
-import { Positions } from "../boardType";
 
-export const initPositions:Positions={
+import { OptionsPositionsMove} from "../boardType";
 
-    position:{
-    bottom: 0,
-    top: 0,
-    left: 0,
-    right: 0,
-    },
-    color:undefined
-   }
+
+export const initialBoard = [
+  [0, 1, 0, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 0, 1, 0],
+  [0, 1, 0, 1, 0, 1, 0, 1],
+  [3, 0, 3, 0, 3, 0, 3, 0],
+  [0, 3, 0, 3, 0, 3, 0, 3],
+  [2, 0, 2, 0, 2, 0, 2, 0],
+  [0, 2, 0, 2, 0, 2, 0, 2],
+  [2, 0, 2, 0, 2, 0, 2, 0]
+];
+
+   
+
+export const initialMoveOptions:OptionsPositionsMove={
+  targetPosition:'',
+  background:'red'
+}
+
+
