@@ -1,32 +1,151 @@
 'use client'
 import { useState } from "react";
-import { Board, OptionsPositionsMove, PiecePositions, ToggleColor } from "../boardType";
+import { Board, OptionsPositionsMove, PiecePositions, PiecesColor, ToggleColor } from "../boardType";
 import { getLastPiecesMoved, setLastPieceMoved, setPiecesPositionLocal } from "@/app/lib/piecesPositionLib";
 import { initialMoveOptions } from "../constants/positions";
 import { usePieces } from "@/app/context/piecePositions";
-
+import { useBoard } from "@/app/context/useSquare";
 export function useMovePieces() {
+  const {square,setSquare}= useBoard()
   const [moveOptions, setMoveOptions] = useState<OptionsPositionsMove[]>([]);
   const { piecesPositions, setPiecesPositions } = usePieces();
   const lastMovedPieceColor = getLastPiecesMoved();
-const [selectedPieceStatus, setSelectedPieceStatus] = useState<ToggleColor>({
-  background: 'red',
-  position: null
-});
+  const [selectedPieceStatus, setSelectedPieceStatus] = useState<ToggleColor>({
+   background: null,
+   position: null
+  });
 
-  const getAvailableMoves = (selectedPiece: PiecePositions) => {
+ //localStorage.clear()
+  const mapPositionToNumbers=(position:string)=>{
+   const dataPosition= position.split('-').map(Number)
+    const targetRow = dataPosition[0]
+    const targetCol = dataPosition[1]
+    return{dataPosition,targetCol,targetRow}
+  }
+
+  const convertCoordsArrayToString=(coords:number[])=>{
+    return coords.toString().replace(',','-')
+  }
+  
+  const convertNumberToCoords=(backgroundPiece:'red'|'blue',targetRow:number,targetCol:number)=>{
+   console.log(targetRow,targetCol)
+    const coords ={
+       leftCoordinates:'',
+       rightCoordinates:''
+    }
+     switch(backgroundPiece){
+       case 'blue': 
+        return {...coords,
+          leftCoordinates:`${targetRow+1}-${targetCol -1}`,
+          rightCoordinates:`${targetRow+1}-${targetCol +1}` 
+        }
+        
+     }
+     return coords
+  }
+
+ 
+ 
+ 
+ 
+  const checkNextPosition=(position:string,currentPosition:string)=>{
+       const dataPosition = mapPositionToNumbers(position)
+       const {leftCoordinates,rightCoordinates} = convertNumberToCoords('blue',dataPosition.targetRow,dataPosition.targetCol)
+        const left = mapPositionToNumbers(leftCoordinates)
+        const right = mapPositionToNumbers(rightCoordinates)
+        const targetCoords = mapPositionToNumbers(currentPosition)
+        const checkIsSquareRight = (targetCoords.targetRow+2)==right.targetRow && (targetCoords.targetCol+2)==right.targetCol
+        const checkIsSquareLeft = (targetCoords.targetRow+2)==left.targetRow && (targetCoords.targetCol-2)==left.targetCol
+        const checkIsSquareTwoStep = checkIsSquareRight?right.dataPosition:checkIsSquareLeft?left.dataPosition:[]
+        const isSquareFull = piecesPositions.some((item)=>item.dataPosition==convertCoordsArrayToString(checkIsSquareTwoStep))
+        if(isSquareFull) return
+        console.log(position,currentPosition)
+        const newSquare = square.map((item) => {
+          const isE = item.data_position === convertCoordsArrayToString(checkIsSquareTwoStep)
+            if (isE) {
+            item.typeColor = 'yellow';
+           
+          }
+        
+          return item;
+        });
+        
+        setSquare(newSquare);
+       
+       console.log(checkIsSquareTwoStep)
+       
+      }
+    const mapSquarePossibleToMove=()=>{
+      const findeSquare = square.find((item)=>item.typeColor=='yellow')
+      const positionToArray = mapPositionToNumbers(findeSquare?.data_position??'')
+      const nextPosition = convertNumberToCoords('blue',positionToArray.targetRow,positionToArray.targetCol)
+      //const left = mapPositionToNumbers(nextPosition.leftCoordinates)
+      //const right = mapPositionToNumbers(nextPosition.rightCoordinates)
+      const pieces = piecesPositions.filter((item)=>item.dataPosition==nextPosition.leftCoordinates || item.dataPosition==nextPosition.rightCoordinates && item.background!=='red' )
+      pieces.forEach((item)=>{
+        checkNextPosition(item.dataPosition,findeSquare?.data_position??"")
+       })
+      
+      console.log(pieces)
+    }
+     
+ 
+ 
+ 
+ 
+ 
+    const showAvailableSquareMoves=(selectedPiece: PiecePositions)=>{
+    //console.log(selectedPiece.background)
+    const dataPosition = selectedPiece.dataPosition.split('-').map(Number)
+    const targetRow = dataPosition[0]
+    const targetCol = dataPosition[1]
+   // const isAdjacentColumn = Math.abs(currentCol - targetCol) === 1;
+      if(selectedPiece.background=='red'){
+        const leftCoordinates = `${targetRow+1}-${targetCol -1}`
+        const rightCoordinates = `${targetRow+1}-${targetCol +1}`
+        const positionOccupeid = piecesPositions.filter((item)=>item.dataPosition==leftCoordinates || item.dataPosition==rightCoordinates && item.background!=='red')
+        if(positionOccupeid.length==0) return
+        positionOccupeid.forEach((item)=>{
+        checkNextPosition(item.dataPosition,selectedPiece.dataPosition)
+       })
+     
+      mapSquarePossibleToMove()
+      
+        //console.log(next)
+       
+     
+      }
+     
+     
+     
+     if(selectedPiece.background=='blue'){
+      console.log('blue')
+   }
+  }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  const markPieceMove = (selectedPiece: PiecePositions) => {
     // Define a nova opção de movimento com a posição e cor da peça selecionada
     setMoveOptions([{ ...initialMoveOptions, targetPosition: selectedPiece.dataPosition, background: selectedPiece.background }]);
-
+    
     // Salva o background da peça atual, se for azul ou vermelho
-    if (['blue', 'red'].includes(selectedPiece.background)) {
+    if (['blue', 'red'].includes(selectedPiece.background??'')) {
       setSelectedPieceStatus({
         ...selectedPieceStatus,
         background: selectedPiece.background,
         position: selectedPiece.dataPosition
       });
     }
-
+    showAvailableSquareMoves(selectedPiece)
     // Atualiza o estado das peças no tabuleiro
     const modifiedPieces = piecesPositions.map((piece) => {
       const isSelectedPiece = piece.dataPosition === selectedPiece.dataPosition;
@@ -50,10 +169,10 @@ const [selectedPieceStatus, setSelectedPieceStatus] = useState<ToggleColor>({
         piece.background = selectedPieceStatus.background;
         return piece;
       }
-
+   
       return piece;
     });
-
+     
     setPiecesPositions(modifiedPieces);
   };
   
@@ -87,7 +206,7 @@ const [selectedPieceStatus, setSelectedPieceStatus] = useState<ToggleColor>({
     const { height, width, left, right, top, bottom } = squareRect;
     const backgroundPiece = moveOptions[0].background;
 
-    capturePieces(currentCoords, squareRect);
+    //capturePieces(currentCoords, squareRect);
 
     let isForwardMove = false;
     if (backgroundPiece === 'blue' && targetCoords[0] - currentCoords[0] === 1) isForwardMove = true;
@@ -176,7 +295,6 @@ const [selectedPieceStatus, setSelectedPieceStatus] = useState<ToggleColor>({
     setMoveOptions([]);
   };
 
-  return { getAvailableMoves, moveOptions, setMoveOptions, updatePiecePosition };
+  return { markPieceMove, moveOptions, setMoveOptions, updatePiecePosition };
 }
 
-//localStorage.clear()

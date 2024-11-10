@@ -1,5 +1,5 @@
 export type SquareColor = 'black' | 'gray';
-export type PiecesColor = 'red' | 'blue' | 'green'
+export type PiecesColor = 'red' | 'blue' | 'green'| null
 
 
 export type Positions ={
@@ -28,7 +28,7 @@ export type Positions ={
 }
 
 export type Board ={
-    typeColor?: "black" | "gray";
+    typeColor?: "black" | "gray" |"yellow";
     id?: string;
     data_key?: string;
     data_position?:string;

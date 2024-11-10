@@ -1,5 +1,6 @@
+import { PiecesColor } from "../board/boardType";
 export type colorPiece ={
-    background?:'blue' | 'red' | 'green' | undefined
+    background?:PiecesColor
     onClick?:((event: React.MouseEvent<HTMLDivElement>)=>void);
     data_key?: string,
     id?:string,

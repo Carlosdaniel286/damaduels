@@ -3,10 +3,11 @@ import {  PiecePositions } from "../boardType";
 import { getPiecesPosition } from "@/app/lib/piecesPositionLib";
 import { usePieces } from "@/app/context/piecePositions";
 import { useBoard } from "@/app/context/useSquare";
+import { useSetupBoard } from "./useSetupBoard";
 
 export function useSetupPieces() {
     const{setPiecesPositions}=usePieces()
-    const { square} = useBoard();
+    const{square} =useBoard()
     const squareRefs = useRef<(HTMLDivElement | null)[]>([]);
     const newArry: PiecePositions[] = [];
     
@@ -78,11 +79,13 @@ export function useSetupPieces() {
     
     //duels
     useEffect(() => {
+      const isColor = square.some((item)=>item.typeColor=='yellow')
+      if(isColor) return
       if(getPiecesPosition()==null) return positionPiecesOnBoard()
        positionPiecesOnBoardOfLocalStorage()
       
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [squareRefs,square]);
+    }, [square]);
     
       
    

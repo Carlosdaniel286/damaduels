@@ -6,13 +6,14 @@ import Square from '../square/square';
 import { useMovePieces } from './hooks/useMoviePiecies';
 import { useSetupPieces } from './hooks/useSetupPieces';
 import { usePieces } from '@/app/context/piecePositions';
-
+import { useBoard } from '@/app/context/useSquare';
 
 export default function Board() {
-  const {square}=useSetupBoard()
+  const {square}= useBoard()
+  useSetupBoard()
   const{piecesPositions}=usePieces()
   const {squareRefs}= useSetupPieces()
-  const {getAvailableMoves,updatePiecePosition}= useMovePieces()
+  const {markPieceMove,updatePiecePosition}= useMovePieces()
 
 return (
     <div className='board'
@@ -29,7 +30,7 @@ return (
          data_position={item.data_position}
          ref={element => {squareRefs?.current.push(element)}}
          onClick={((ev)=>{
-        // console.log(item.data_position)
+        console.log(item.data_position,item.data_key)
          updatePiecePosition(ev, item,)
         
          })}
@@ -38,7 +39,7 @@ return (
          </div>
       ))}
     {  
-      
+      square.length==64 &&
       piecesPositions.map((item,index)=>(
         <div
         key={index}
@@ -48,7 +49,7 @@ return (
         data-position={item.dataPosition}
         onClick={() => {
          console.log(item.dataPosition)
-          getAvailableMoves(item)
+         markPieceMove(item)
       }}
         style={{
           position:'absolute', 

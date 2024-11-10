@@ -14,7 +14,7 @@ export const getPiecesPosition=()=>{
 
 
 export const setLastPieceMoved =(backgroundPieces:PiecesColor)=>{
-    if (typeof window == 'undefined') return null
+    if (typeof window == 'undefined' || backgroundPieces==null) return null
     localStorage.setItem('lastPiece', backgroundPieces);
 }
 

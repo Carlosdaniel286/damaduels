@@ -7,7 +7,7 @@ import { useBoard } from "@/app/context/useSquare";
 
 export function useSetupBoard() {
   const [board] = useState(initialBoard);
-  const { square, setSquare } = useBoard();
+  const { setSquare } = useBoard();
  
   const newSquares:Board[]=[]
    for (let row = 0; row < board.length; row++) {
@@ -50,11 +50,11 @@ export function useSetupBoard() {
    
   useEffect(()=>{
   setSquare(newSquares)
-  
+  console.log('atulizou')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[board])
   
-  return {square}
+  return{board}
 }
 //0 representa uma posição vazia.
 //1 representa uma peça vermelha.

@@ -1,7 +1,7 @@
 import { LegacyRef } from "react"
 
 export type squareType = {
-  typeColor?:"black"|"gray",
+  typeColor?:"black"|"gray"|'yellow',
   ref?: LegacyRef<HTMLDivElement> | undefined,
   id?:string,
   onClick?:((event: React.MouseEvent<HTMLDivElement>)=>void)
