@@ -30,8 +30,8 @@ return (
          data_position={item.data_position}
          ref={element => {squareRefs?.current.push(element)}}
          onClick={((ev)=>{
-        console.log(item.data_position,item.data_key)
-         updatePiecePosition(ev, item,)
+        console.log(item.data_position)
+           updatePiecePosition(ev, item,)
         
          })}
          />

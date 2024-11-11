@@ -80,6 +80,7 @@ export function useSetupPieces() {
     //duels
     useEffect(() => {
       const isColor = square.some((item)=>item.typeColor=='yellow')
+      console.log(isColor)
       if(isColor) return
       if(getPiecesPosition()==null) return positionPiecesOnBoard()
        positionPiecesOnBoardOfLocalStorage()

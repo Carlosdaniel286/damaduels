@@ -2,7 +2,7 @@
 import './square.css'
 import { squareType } from './squareTypes';
 
-export default function Square({typeColor,ref,onClick,id,data_key,data_position}:squareType) {
+export default function Square({typeColor,ref,onClick,id,data_key,data_position,occupied}:squareType) {
     return (
       <div className='square'
       style={{background:typeColor }}
@@ -11,6 +11,7 @@ export default function Square({typeColor,ref,onClick,id,data_key,data_position}
       onClick={onClick}
       data-key={data_key}
       data-position={data_position}
+      data-occupied={occupied??typeColor }
       >
      </div>
     );
